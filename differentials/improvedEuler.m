@@ -1,40 +1,24 @@
-clear all; clc;
+clear all; clc; close all;
 
-a = 0,
-b = 0.5;
-h = 5;
-dx = (b - a) / h;
+f = @(x, y) (x + y - 1)^2;
+disp(f);
+[x, y] = EulerImproved(f, 0, 0.5, 2, 0.05);
 
-xin = a;
-yin = 0.5;
-slope1 = 0;
-slope2 = 0;
-slopeuse = 0;
+function [x, y] = EulerImproved(f, xi, xf, yi, h)
+    x = [xi:h:xf];
+    y = zeros(1, length(x));
+    y_n = zeros(1, length(x));
+    y(1) = yi;
+    y_n(1) = yi;
+    y_n(2) = y(1) + h * f(x(1), y(1));
+    y(2) = y(1) + (h / 2) * (f(x(1), y(1)) + f(x(2), y_n(2)));
 
-y = yin;
-x = xin;
+    for i = 2:length(x) - 1
+        f_normal = f(x(i), y(i));
+        y_n(i + 1) = y(i) + h * f_normal;
 
-xp = 0;
-yp = 3;
-
-yinc = 0;
-
-xv = [x];
-yv = [y];
-
-for i = a:dx:b;
-    slope1 = (x - y)^2;
-    inc1 = slope1 * dx;
-    xp = x + dx;
-    yp = y + inc1;
-    slope2 = ((xp - yp)^2);
-    slopeuse = ((slope1 + slope2) / 2);
-    yinc = slopeuse * dx;
-    x = x + dx;
-    y = y +yinc;
-    xv = [xv x];
-    yv = [yv y];
+        f_diferente = f(x(i + 1), y_n(i + 1));
+        y(i + 1) = y(i) + h * (f_normal + f_diferente) / 2;
+    end
 
 end
-
-plot(xv, yv);
