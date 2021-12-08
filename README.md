@@ -13,3 +13,4 @@ Here are the proyects by folder structure:
 - Epidemiology
   - SIR by Euler's method (SIREulerMethod)
 - Physics
+  - Hofferman Trayectory with ODE45
