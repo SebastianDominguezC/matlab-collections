@@ -14,3 +14,5 @@ Here are the proyects by folder structure:
   - SIR by Euler's method (SIREulerMethod)
 - Physics
   - Hofferman Trayectory with ODE45
+  - Central Spring trayectory
+  - Central Gravitational Field (With Leapfrog method)
