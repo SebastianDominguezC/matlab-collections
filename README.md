@@ -16,3 +16,6 @@ Here are the proyects by folder structure:
   - Hofferman Trayectory with ODE45
   - Central Spring trayectory
   - Central Gravitational Field (With Leapfrog method)
+  - Gravity Bodies
+    - OOP for multi-body chaos system of gravitational forces
+    - Leapfrog method
