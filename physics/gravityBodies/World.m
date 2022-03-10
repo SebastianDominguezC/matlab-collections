@@ -16,25 +16,6 @@ classdef World
             w.dt = dt;
         end
 
-        function test(obj)
-            body1 = obj.bodies(1);
-            body2 = obj.bodies(2);
-            disp(body1.Position.Magnitude);
-            disp(body2.Position.Magnitude);
-
-            disp(body1.DirToOther(body2));
-            disp(body2.DirToOther(body1));
-
-            disp("Acc");
-            disp(body1.Acc(body2, obj.G));
-            disp(body2.Acc(body1, obj.G));
-
-            disp("F");
-            disp(body1.Acc(body2, obj.G).Magnitude * body1.Mass);
-            disp(body2.Acc(body1, obj.G).Magnitude * body2.Mass);
-
-        end
-
         function plot(obj)
             bods = obj.bodies;
             figure;
@@ -125,6 +106,92 @@ classdef World
             end
 
             hold off;
+        end
+
+        function total = calcKineticEnergies(obj, N)
+            bods = obj.bodies;
+            total = zeros(1, N);
+
+            for i = 1:length(bods)
+                ke = bods(i).KERecord;
+
+                for j = 1:N
+                    total(j) = total(j) + ke(j);
+                end
+
+            end
+
+        end
+
+        function total = calcPotentialEnergies(obj, N)
+            bods = obj.bodies;
+            total = zeros(1, N);
+
+            for i = 1:length(bods)
+                bod = bods(i);
+                copy = bods;
+                copy([i]) = [];
+
+                pe = bod.PotentialEnergy(copy, obj.G);
+
+                for j = 1:N
+                    total(j) = total(j) + pe(j);
+                end
+
+            end
+
+            total = 0.5 * total;
+        end
+
+        function plotTotalEnergies(obj)
+            N = length(obj.bodies(1).PositionRecord) - 1;
+            KE = calcKineticEnergies(obj, N);
+            PE = calcPotentialEnergies(obj, N);
+
+            Tot = KE + PE;
+
+            T = obj.t(1:N);
+            figure;
+            hold on;
+            title('Grafico Energias');
+            xlabel('t (t)');
+            ylabel('E (J)');
+            plot(T, KE, 'r');
+            plot(T, PE, 'b');
+            plot(T, Tot, 'g');
+            legend('EK', 'EP', 'Tot');
+        end
+
+        function calcLinMomentum(obj)
+            moments = obj.bodies(1).LinMRecord;
+            bods = obj.bodies;
+            N = length(bods);
+
+            for i = 2:N
+                body = bods(i);
+                linMoment = body.LinMRecord;
+
+                for j = 1:length(linMoment)
+                    moments(j) = linMoment(j).Add(moments(j));
+                end
+
+            end
+
+            % Magnitudes
+            p = zeros(1, length(moments));
+
+            for j = 1:length(moments)
+                p(j) = moments(j).Magnitude;
+            end
+
+            T = obj.t(1:length(moments));
+
+            figure;
+            hold on;
+            title('Grafico momento lineal');
+            xlabel('t (t)');
+            ylabel('Momentum (mv)');
+            plot(T, p, 'r');
         end
 
     end

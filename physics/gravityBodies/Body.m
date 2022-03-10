@@ -9,6 +9,9 @@ classdef Body < handle
         PositionRecord
         VelocityRecord
         VelocityHalfRecord
+        KERecord
+        PERecord
+        LinMRecord
         Color
     end
 
@@ -52,11 +55,6 @@ classdef Body < handle
 
         end
 
-        function f = NetForce(obj, others, G)
-            sum = obj.NetAcc(others, G).Scale(obj.Mass);
-            f = sum.Scale(obj.Mass);
-        end
-
         function VHalfStep(obj, acc, dt)
             diff = acc.Scale(0.5 * dt);
             obj.VelocityHalfStep = obj.Velocity.Add(diff);
@@ -73,6 +71,39 @@ classdef Body < handle
             diff = acc.Scale(0.5 * dt);
             obj.Velocity = obj.Velocity.Add(diff);
             obj.VelocityRecord = [obj.VelocityRecord obj.Velocity];
+            obj.KERecord = [obj.KERecord KineticEnergy(obj)];
+            obj.LinMRecord = [obj.LinMRecord LinMomentum(obj)];
+        end
+
+        function Ek = KineticEnergy(obj)
+            Ek = obj.Mass * (obj.Velocity.Magnitude)^2;
+        end
+
+        function Ep = PotentialEnergy(obj, others, G)
+            positions = obj.PositionRecord;
+            N = length(positions);
+            Ep = zeros(1, N);
+            m = obj.Mass;
+
+            for i = 1:length(others)
+                other = others(i);
+                M = other.Mass;
+
+                for j = 1:N
+                    p = positions(j);
+                    p2 = other.PositionRecord(j);
+                    r = p.DirVecOther(p2).Magnitude;
+                    PE = (-G * M * m) / r;
+
+                    Ep(j) = Ep(j) + PE;
+                end
+
+            end
+
+        end
+
+        function momentum = LinMomentum(obj)
+            momentum = obj.Velocity.Scale(obj.Mass);
         end
 
     end
