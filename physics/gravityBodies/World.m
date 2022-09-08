@@ -22,6 +22,7 @@ classdef World
             title('Objectos');
             hold on;
             grid on;
+            axis equal;
             view(3);
 
             for i = 1:length(bods)
@@ -87,6 +88,7 @@ classdef World
             title('Objectos');
             hold on;
             grid on;
+            axis equal;
             view(3);
 
             for i = 1:length(bods)
@@ -166,22 +168,22 @@ classdef World
             moments = obj.bodies(1).LinMRecord;
             bods = obj.bodies;
             N = length(bods);
+            L = length(moments);
+
+            x = zeros(1, L);
+            y = zeros(1, L);
+            z = zeros(1, L);
 
             for i = 2:N
                 body = bods(i);
                 linMoment = body.LinMRecord;
 
                 for j = 1:length(linMoment)
-                    moments(j) = linMoment(j).Add(moments(j));
+                    x(j) = x(j) + linMoment(j).x;
+                    y(j) = y(j) + linMoment(j).y;
+                    z(j) = z(j) + linMoment(j).z;
                 end
 
-            end
-
-            % Magnitudes
-            p = zeros(1, length(moments));
-
-            for j = 1:length(moments)
-                p(j) = moments(j).Magnitude;
             end
 
             T = obj.t(1:length(moments));
@@ -190,8 +192,11 @@ classdef World
             hold on;
             title('Grafico momento lineal');
             xlabel('t (t)');
-            ylabel('Momentum (mv)');
-            plot(T, p, 'r');
+            ylabel('Momento lineal por componentes (mv)');
+            plot(T, x, 'r');
+            plot(T, y, 'g');
+            plot(T, z, 'b');
+            legend('x', 'y', 'z')
         end
 
     end
